@@ -49,38 +49,38 @@
 	?>
   <div class="container">
   <nav class="navbar navbar-expand-lg bg-dark navbar-dark sticky-top">
-	  <div class="container">
-		<a class="navbar-brand" href="index.php"><i class="fa-solid fa-barcode"></i>&nbsp;AssetCache</a>
-		<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mynavbar">
-		  <span class="navbar-toggler-icon"></span>
-		</button>
-		<div class="collapse navbar-collapse" id="mynavbar">
-		  <ul class="navbar-nav me-auto">
-		  <li class="nav-item"><a href="asset_add.php" class="btn btn-primary" type="button">Create</a></li>
-			<li class="nav-item">
-			  <a class="nav-link" href="assets.php"><i class="fa-solid fa-box"></i>&nbsp; Assets</a>
-			</li>
-			
-			<li class="nav-item dropdown">
-			  <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">More...</a>
-			  <ul class="dropdown-menu">
-				<li><a class="dropdown-item" href="locations.php"><i class="fa-solid fa-location-dot"></i>&nbsp;Locations</a></li>
-				<li><a class="dropdown-item" href="labels.php"><i class="fa-solid fa-tag"></i>&nbsp;Labels</a></a></li>
-				<li><a class="dropdown-item" href="tools.php"><i class="fa-solid fa-toolbox"></i>&nbsp;Tools</a></a></li>
-				<li><hr class="dropdown-divider"></li>
-				<li><a class="dropdown-item" href="profile.php"><i class="fa-solid fa-user"></i>&nbsp;Profile</a></a></li>
-				<li><a class="dropdown-item" href="users.php"><i class="fa-solid fa-users"></i>&nbsp;Users</a></a></li>
-				<li><a class="dropdown-item" href="settings.php"><i class="fa-solid fa-gear"></i>&nbsp;Settings</a></a></li>
-			  </ul>
-			</li>
-			<li class="nav-item">
-			  <a class="nav-link" href="sessionlogout.php"><i class="fa-solid fa-right-from-bracket"></i>&nbsp;Log out</a>
-			</li>
-		  </ul>
-		  <form class="d-flex">
-			<input class="form-control me-2" type="text" placeholder="Search">
-			<button class="btn btn-primary" type="button">Search</button>
-		  </form>
-		</div>
-	  </div>
-  </nav>
+    <div class="container">
+        <a class="navbar-brand" href="index.php"><i class="fa-solid fa-barcode"></i>&nbsp;AssetCache</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mynavbar">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="mynavbar">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a href="asset_add.php" class="btn btn-primary" type="button">Create</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="assets.php"><i class="fa-solid fa-box"></i>&nbsp; Assets</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">More...</a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="locations.php"><i class="fa-solid fa-location-dot"></i>&nbsp;Locations</a></li>
+                        <li><a class="dropdown-item" href="labels.php"><i class="fa-solid fa-tag"></i>&nbsp;Labels</a></li>
+                        <li><a class="dropdown-item" href="tools.php"><i class="fa-solid fa-toolbox"></i>&nbsp;Tools</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="profile.php"><i class="fa-solid fa-user"></i>&nbsp;Profile</a></li>
+                        <li><a class="dropdown-item" href="users.php"><i class="fa-solid fa-users"></i>&nbsp;Users</a></li>
+                        <li><a class="dropdown-item" href="settings.php"><i class="fa-solid fa-gear"></i>&nbsp;Settings</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="sessionlogout.php"><i class="fa-solid fa-right-from-bracket"></i>&nbsp;Log out</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
