@@ -81,7 +81,7 @@ require_once("inc/sessionhandler.php");
 	
 					// UPDATE USER RECORD TO SHOW LOGGED IN TODAY
 						
-						$update_row = $mysqli->query("UPDATE $dbtable SET Loggedon='$LoginDate' WHERE userid=".$db_userid); 
+						$update_row = $mysqli->query("UPDATE $dbtable SET loggedon='".$LoginDate." ".$LoginTime."' WHERE userid=".$db_userid); 
 						if(!$update_row){
 							$error =  'Error : ('. $mysqli->errno .') '. $mysqli->error;
 						}

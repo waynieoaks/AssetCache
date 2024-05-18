@@ -176,7 +176,7 @@ if ($result_emails !== false && $result_emails->num_rows > 0) {
         .on('form:submit', function() {
             if ($('.parsley-error').length > 0) {
                 return false; // Prevent form submission
-            }
+            } 
         });
     });
 </script>
@@ -189,8 +189,6 @@ if ($result_emails !== false && $result_emails->num_rows > 0) {
 <p class="text-center"><i>Created on <?php echo $createdon; ?> by <?php echo $createdby; ?>
     <br>Updated on <?php echo $updatedon; ?> by <?php echo $updatedby; ?></i></p>
 <hr>
-
-
 
 <?php require 'inc/foot.php';?>
 

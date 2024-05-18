@@ -58,7 +58,7 @@ if (isset($formData['tableid']) && isset($formData['autoid']) && isset($formData
 
     if ($result) {
 		?>
-		<div class="alert alert-success mt-3">
+		<div id="record_success" class="alert alert-success mt-3">
 			Record updated successfully!
         </div>
 		<?php

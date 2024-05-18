@@ -69,6 +69,7 @@
 				<li><a class="dropdown-item" href="tools.php"><i class="fa-solid fa-toolbox"></i>&nbsp;Tools</a></a></li>
 				<li><hr class="dropdown-divider"></li>
 				<li><a class="dropdown-item" href="profile.php"><i class="fa-solid fa-user"></i>&nbsp;Profile</a></a></li>
+				<li><a class="dropdown-item" href="users.php"><i class="fa-solid fa-users"></i>&nbsp;Users</a></a></li>
 				<li><a class="dropdown-item" href="settings.php"><i class="fa-solid fa-gear"></i>&nbsp;Settings</a></a></li>
 			  </ul>
 			</li>
