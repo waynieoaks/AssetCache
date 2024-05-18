@@ -48,7 +48,7 @@ $My_Email="";
 				
 // CREATE A NEW PASSWORD //
 if ($errors==0) {
-	$vowels = 'aeuy';
+	$vowels = 'aeuy!?$%&';
 	$consonants = 'bdghjmnpqrstvz';
 	$consonants .= 'BDGHJLMNPQRSTVWXZ';
 	$vowels .= "AEUY";

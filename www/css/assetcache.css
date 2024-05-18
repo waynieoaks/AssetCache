@@ -25,18 +25,4 @@ background-color: #f2f2f2;
     background-color: #f8d7da !important; /* Highlight the input field background */
 }
 
-/* Styles for Parsley.js error messages */
-.password-match-error-text {
-    margin-top: 5px !important; /* Adjust spacing from the field */
-    list-style-type: none !important; /* Remove default list bullet points */
-    padding-left: 0 !important; /* Remove default padding */
-    color: #dc3545 !important; /* Error text color */
-    font-size: 0.875rem !important; /* Adjust font size */
-}
-
-/* Highlight the input field with errors */
-.password-match-error-input {
-    border-color: #dc3545 !important; /* Highlight the input field border */
-    background-color: #f8d7da !important; /* Highlight the input field background */
-}
 

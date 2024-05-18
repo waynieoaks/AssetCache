@@ -106,15 +106,18 @@ if ($result_emails !== false && $result_emails->num_rows > 0) {
                 <div class="mb-3">
                     <label for="password" class="form-label">New Password</label>  <span><small>(Leave password fields blank to keep your current password)</small></span>
                     <input type="password" class="form-control" id="password" name="password"
-                        data-parsley-minlength="8">
+                    data-parsley-pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?&quot;:&#39;{}|<>])[A-Za-z\d!@#$%^&*(),.?&quot;:&#39;{}|<>]{8,}$"
+                    data-parsley-pattern-message="Password must be at least 8 characters long, contain one lowercase letter, one uppercase letter, one digit, and one special character."
+                        data-parsley-trigger="keyup">
                 </div>
                 <div class="mb-3">
                     <label for="confirm_password" class="form-label">Confirm New Password</label>
-                    <input type="password" class="form-control" id="confirm_password" name="confirm_password" >
-
-                        <div id='passMatch' class="password-match-error-text d-none">
-                            Passwords need to match.
-                        </div>                
+                    <input type="password" class="form-control" id="confirm_password" name="confirm_password" 
+                        data-parsley-validate-if-empty
+                        data-parsley-equalto="#password"
+                        data-parsley-required-if="#password"
+                        data-parsley-error-message="Passwords need to match."
+                        data-parsley-trigger="keyup">              
                 </div>
                 <!-- Hidden field for recordset -->
                 <input type="hidden" name="tableid" value="users">
@@ -128,19 +131,6 @@ if ($result_emails !== false && $result_emails->num_rows > 0) {
 </div>
 
 <script type="text/javascript">
-
-    document.getElementById('update-form').addEventListener('submit', function(e) {
-    var field1 = document.getElementById('password').value;
-    var field2 = document.getElementById('confirm_password').value;
-
-        if (field1 !== field2) {
-            // If they don't match, prevent form submission
-            e.preventDefault();
-            $("#passMatch").removeClass("d-none");
-            $("#FormError").removeClass("d-none");
-            $("#confirm_password").addClass("password-match-error-input");
-        }
-    });
 
     $(function () {
         // Custom validator to check if the username is unique
@@ -163,6 +153,21 @@ if ($result_emails !== false && $result_emails->num_rows > 0) {
             }
         });
 
+        // Custom validator for conditional requirement
+        window.Parsley.addValidator('requiredIf', {
+            requirementType: 'string',
+            validateString: function(value, requirement) {
+                var target = $(requirement);
+                if (target.length === 0) {
+                    return true; // If the target element doesn't exist, validation passes.
+                }
+                return target.val().length === 0 || value.length > 0;
+            },
+            messages: {
+                en: 'This field is required.'
+            }
+        });
+
         $('#update-form').parsley().on('field:validated', function() {
             var ok = $('.parsley-error').length === 0;
             $('.bs-callout-info').toggleClass('hidden', !ok);
@@ -177,10 +182,6 @@ if ($result_emails !== false && $result_emails->num_rows > 0) {
 </script>
 
 <div class="alert alert-danger bs-callout bs-callout-warning d-none mt-3">
-    <strong>Unable to update: </strong> Please check the data you have entered and try again.
-</div>
-
-<div id='FormError' class="alert alert-danger d-none mt-3">
     <strong>Unable to update: </strong> Please check the data you have entered and try again.
 </div>
 
