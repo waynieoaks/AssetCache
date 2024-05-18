@@ -4,7 +4,7 @@
 
 if(isset($_GET['id'])) {
 
-  $sql = "SELECT l.idlabels, l.label, l.description, uc.username AS createdby, uu.username AS updatedby, 
+  $sql = "SELECT l.idlabels, l.label, l.description, uc.fullname AS createdby, uu.fullname AS updatedby, 
             COUNT(alj.idassets) AS asset_count,
             CASE 
                 WHEN l.createdon = '0000-00-00' THEN 'unknown'
@@ -22,7 +22,7 @@ if(isset($_GET['id'])) {
             WHERE (l.deletedon = '0000-00-00' OR l.deletedon IS NULL) 
             AND (a.deletedon = '0000-00-00' OR a.deletedon IS NULL)  
             AND l.idlabels = $recordid
-            GROUP BY l.idlabels, l.label, l.description, uc.username, uu.username, createdon, updatedon";
+            GROUP BY l.idlabels, l.label, l.description, uc.fullname, uu.fullname, createdon, updatedon";
 
   $result = $mysqli->query($sql);
 
@@ -67,8 +67,8 @@ if(isset($_GET['id'])) {
                   </div>
               </div>
                 <hr>
-              <p class="text-center"><i>Created on <?php echo $row['createdon']; ?> by <?php echo ucfirst(strtolower($row['createdby'])); ?>
-                <br>Updated on <?php echo $row['updatedon']; ?> by <?php echo ucfirst(strtolower($row['updatedby'])); ?></i></p>
+              <p class="text-center"><i>Created on <?php echo $row['createdon']; ?> by <?php echo $row['createdby']; ?>
+                <br>Updated on <?php echo $row['updatedon']; ?> by <?php echo $row['updatedby']; ?></i></p>
                 <hr>
 
                 <h4>Related Assets</h4>

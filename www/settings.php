@@ -28,7 +28,7 @@ $sql_currencies = "SELECT currencyname, currencyvalue FROM currencies WHERE dele
 $result_currencies = $mysqli->query($sql_currencies);
 
 // Fetch the setting details
-$sql = "SELECT s.idsettings, s.setting_currency, uu.username AS updatedby,
+$sql = "SELECT s.idsettings, s.setting_currency, uu.fullname AS updatedby,
             CASE 
                 WHEN s.updatedon = '0000-00-00' THEN 'unknown'
                 ELSE DATE_FORMAT(s.updatedon, '%d %M %Y @ %H:%i')
@@ -89,7 +89,7 @@ if ($result !== false && $result->num_rows > 0) {
     </div>
 
     <hr>
-    <p class="text-center">Updated on <?php echo $row['updatedon']; ?> by <?php echo ucfirst(strtolower($row['updatedby'])); ?></i></p>
+    <p class="text-center">Updated on <?php echo $row['updatedon']; ?> by <?php echo $row['updatedby']; ?></i></p>
     <hr>
 
 <?php } ?>

@@ -25,7 +25,7 @@
 			</thead>
 			<tbody>
 			<?php
-			  $sql = "SELECT l.idlabels, l.label, l.description, uc.username AS createdby, uu.username AS updatedby, 
+			  $sql = "SELECT l.idlabels, l.label, l.description, uc.fullname AS createdby, uu.fullname AS updatedby, 
 			  COUNT(alj.idassets) AS asset_count,
 			  CASE 
 				  WHEN l.createdon = '0000-00-00' THEN 'unknown'
@@ -42,7 +42,7 @@
 			  LEFT JOIN users AS uu ON l.updatedby = uu.userid
 			  WHERE (l.deletedon = '0000-00-00' OR l.deletedon IS NULL) 
 			  AND (a.deletedon = '0000-00-00' OR a.deletedon IS NULL)  
-			  GROUP BY l.idlabels, l.label, l.description, uc.username, uu.username, createdon, updatedon";
+			  GROUP BY l.idlabels, l.label, l.description, uc.fullname, uu.fullname, createdon, updatedon";
 			  
 			  $result = $mysqli->query($sql);
 

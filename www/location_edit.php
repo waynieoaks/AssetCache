@@ -29,7 +29,7 @@ if (isset($_GET['id'])) {
     $recordid = intval($_GET['id']);  // Assuming $recordid is set here
 
     // Fetch the label details
-    $sql = "SELECT l.idlocations, l.location, l.description, l.parent, uc.username AS createdby, p.idlocations AS pidlocations, p.location AS plocation, uu.username AS updatedby, 
+    $sql = "SELECT l.idlocations, l.location, l.description, l.parent, uc.fullname AS createdby, p.idlocations AS pidlocations, p.location AS plocation, uu.fullname AS updatedby, 
             COUNT(a.idassets) AS asset_count,
                 CASE 
                     WHEN l.createdon = '0000-00-00' THEN 'unknown'
@@ -46,7 +46,7 @@ if (isset($_GET['id'])) {
                 LEFT JOIN users AS uu ON l.updatedby = uu.userid
                 WHERE (l.deletedon = '0000-00-00' OR l.deletedon IS NULL) 
                 AND l.idlocations = $recordid
-                GROUP BY l.idlocations, l.location, l.description, uc.username, uu.username, createdon, updatedon";
+                GROUP BY l.idlocations, l.location, l.description, uc.fullname, uu.fullname, createdon, updatedon";
 
     $result = $mysqli->query($sql);
 
@@ -151,8 +151,8 @@ if (isset($_GET['id'])) {
         </div>
 
         <hr>
-        <p class="text-center"><i>Created on <?php echo $row['createdon']; ?> by <?php echo ucfirst(strtolower($row['createdby'])); ?>
-            <br>Updated on <?php echo $row['updatedon']; ?> by <?php echo ucfirst(strtolower($row['updatedby'])); ?></i></p>
+        <p class="text-center"><i>Created on <?php echo $row['createdon']; ?> by <?php echo $row['createdby']; ?>
+            <br>Updated on <?php echo $row['updatedon']; ?> by <?php echo $row['updatedby']; ?></i></p>
         <hr>
 
         <?php

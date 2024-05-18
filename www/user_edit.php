@@ -10,7 +10,7 @@
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="index.php">Home</a></li>
                     <li class="breadcrumb-item"><a href="users.php">Users</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Edit User</li>
+                    <li class="breadcrumb-item active" aria-current="page">Edit</li>
                 </ol>
             </nav>
         </div>
@@ -128,7 +128,7 @@ if ($result_emails !== false && $result_emails->num_rows > 0) {
                 <input type="hidden" name="tableid" value="users">
                 <input type="hidden" name="autoid" value="userid">
                 <input type="hidden" name="updatedby" value="<?php echo $session_userid; ?>">
-                <input type="hidden" name="recordid" value="<?php echo $session_userid; ?>">
+                <input type="hidden" name="recordid" value="<?php echo $recordid; ?>">
                 <button type="submit" class="btn btn-primary">Update Profile</button>
             </form>
         </div>
