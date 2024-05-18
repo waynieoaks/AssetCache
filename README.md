@@ -12,11 +12,15 @@ Home inventory is not supposed to be fun so we wanted to reflect that in the des
 Nope... I wrote this to meet my needs, but figured it may be useful for others too. While I don't have the time to alter the design, I made the code open source so you can take the source code and tinker (I cannot support you in your adventures though, I am afraid).
 
 ## INSTALLATION
+
+IMPORTANT NOTE: I have not finished writing this site - so it will not work yet! Watch this space for the first release... 
+
 To get started with AssetCache, follow these steps:
 
 ### Prerequisites
-- Ensure you have a web server that supports PHP (such as Apache or Nginx).
-- Make sure you have a MySQL or MariaDB database set up.
+- Make sure you have a web server that supports PHP (such as Apache or Nginx).
+- Make sure you have a email server you can connect the site to via SMTP
+- Make sure you have a MySQL or MariaDB database.
 
 ### Steps
 1. **Take a copy:**
