@@ -1,0 +1,27 @@
+body {
+background-color: #f2f2f2;
+}
+
+.form-label  {
+    font-weight: bold;
+}
+
+/* Styles for Parsley.js error messages */
+.parsley-errors-list.parsley-errors-list {
+    margin-top: 5px !important; /* Adjust spacing from the field */
+    list-style-type: none !important; /* Remove default list bullet points */
+    padding-left: 0 !important; /* Remove default padding */
+    color: #dc3545 !important; /* Error text color */
+    font-size: 0.875rem !important; /* Adjust font size */
+}
+
+.parsley-errors-list.parsley-errors-list li {
+    margin-bottom: 5px !important; /* Adjust spacing between error messages */
+}
+
+/* Highlight the input field with errors */
+.parsley-error {
+    border-color: #dc3545 !important; /* Highlight the input field border */
+    background-color: #f8d7da !important; /* Highlight the input field background */
+}
+
