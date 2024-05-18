@@ -1,5 +1,10 @@
 <?php 
 
+// DEBUG
+  // echo '<pre>';
+  // print_r($_POST);
+  // echo '</pre>';
+
   // Get the form data 
   $formData = [];
   foreach ($_POST as $key => $value) {
@@ -18,13 +23,29 @@ if (isset($formData['tableid']) && isset($formData['autoid']) && isset($formData
     // Loop through the form data to build the SET clauses
     foreach ($formData as $key => $value) {
         // Exclude fields that are not relevant for the SET clause
-        if ($key != 'tableid' && $key != 'autoid' && $key != 'recordid') {
+        if ($key != 'tableid' && $key != 'autoid' && $key != 'recordid' && $key != 'confirm_password') {
+          if ($key == 'password') {
+            // This is the password field
+            if ($value != '') {
+             //Hash the password
+              $sanitizedValue = password_hash($mysqli->real_escape_string($value), PASSWORD_DEFAULT);
+              // Build the SET clause
+              $key = "password_sha1";
+              $setClauses[] = "`$key` = '$sanitizedValue'";
+            }
+          } else {
             // Sanitize the value to prevent SQL injection (you should use prepared statements instead)
             $sanitizedValue = $mysqli->real_escape_string($value);
             // Build the SET clause
             $setClauses[] = "`$key` = '$sanitizedValue'";
+          }
         }
     }
+    
+    //DEBUG
+      // echo '<pre>';
+      // print_r($setClauses);
+      // echo '</pre>';
 
     // Construct the SET portion of the SQL query
     $setClause = implode(", ", $setClauses);
@@ -55,8 +76,6 @@ if (isset($formData['tableid']) && isset($formData['autoid']) && isset($formData
 			<strong>Error updating record: </strong> Required form data is missing.
         </div>
 
-
 	<?php
 }
-
 ?>
