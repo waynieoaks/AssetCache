@@ -83,18 +83,22 @@ if ($result_emails !== false && $result_emails->num_rows > 0) {
                     <label for="username" class="form-label">Username</label>
                     <input type="text" class="form-control" id="username" name="username" value="<?php echo htmlspecialchars($username); ?>"
                         data-parsley-maxlength="45" 
-                        data-parsley-pattern="/^[a-zA-Z0-9.,\/&()]*$/" 
+                        data-parsley-minlength="5"
+                        data-parsley-pattern="/^[a-zA-Z0-9.,!#$%&'*+\-=\^_~|/?{}()]*$/" 
                         data-parsley-maxlength-message="Please enter no more than 45 characters." 
-                        data-parsley-pattern-message="Please use only letters, numbers, ., /, &, (, and )." 
+                        data-parsley-minlength-message="Please enter more than 4 characters."
+                        data-parsley-pattern-message="Please use only letters, numbers or allowed characters: ., ,, !, #, $, %, &, ', *, +, -, =, ^, _, ~, |, /, ?, {, }, (, )."  
                         data-parsley-uniqueusername required>
                 </div>
                 <div class="mb-3">
                     <label for="fullname" class="form-label">Full Name</label>
                     <input type="text" class="form-control" id="fullname" name="fullname" value="<?php echo htmlspecialchars($fullname); ?>"
                         data-parsley-maxlength="45" 
-                        data-parsley-pattern="/^[a-zA-Z0-9.,\/&() ]*$/" 
+                        data-parsley-minlength="5"
+                        data-parsley-pattern="/^[a-zA-Z0-9.,!#$%&'*+\-=\^_~|/?{}() ]*$/" 
                         data-parsley-maxlength-message="Please enter no more than 45 characters." 
-                        data-parsley-pattern-message="Please use only letters, numbers, ., /, &, (, and )." 
+                        data-parsley-minlength-message="Please enter more than 4 characters."
+                        data-parsley-pattern-message="Please use only letters, numbers or allowed characters: ., ,, !, #, $, %, &, ', *, +, -, =, ^, _, ~, |, /, ?, {, }, (, ) and spaces." 
                         required>
                 </div>
                 <div class="mb-3">
@@ -125,6 +129,7 @@ if ($result_emails !== false && $result_emails->num_rows > 0) {
                 <input type="hidden" name="updatedby" value="<?php echo $session_userid; ?>">
                 <input type="hidden" name="recordid" value="<?php echo $session_userid; ?>">
                 <button type="submit" class="btn btn-primary">Update Profile</button>
+                <a href="index.php" class="btn btn-outline-secondary float-end">Cancel</a>
             </form>
         </div>
     </div>
