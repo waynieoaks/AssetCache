@@ -16,12 +16,23 @@ if (isset($formData['tableid']) && isset($formData['autoid'])) {
     // Loop through the form data to build the columns and values for the INSERT statement
     foreach ($formData as $key => $value) {
         // Exclude fields that are not relevant for the INSERT statement
-        if ($key != 'tableid' && $key != 'autoid') {
-            // Sanitize the value to prevent SQL injection (you should use prepared statements instead)
-            $sanitizedValue = $mysqli->real_escape_string($value);
-            // Add the column and value to their respective arrays
-            $columns[] = "`$key`";
-            $values[] = "'$sanitizedValue'";
+        if ($key != 'tableid' && $key != 'autoid' && $key != 'confirm_password') {
+            if ($key == 'password') {
+                // This is the password field
+                if ($value != '') {
+                    //Hash the password
+                    $sanitizedValue = password_hash($mysqli->real_escape_string($value), PASSWORD_DEFAULT);
+                    // Build the SET clause
+                    $columns[] = "password_sha1";
+                    $values[] = "'$sanitizedValue'";
+                }
+            } else {
+                // Sanitize the value to prevent SQL injection (you should use prepared statements instead)
+                $sanitizedValue = $mysqli->real_escape_string($value);
+                // Add the column and value to their respective arrays
+                $columns[] = "`$key`";
+                $values[] = "'$sanitizedValue'";
+            }
         }
     }
 
