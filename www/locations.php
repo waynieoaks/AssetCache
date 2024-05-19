@@ -114,8 +114,8 @@
                 { "className": "d-none d-md-table-cell", "width": "90px" }
             ],
             "order": [ 1, "asc" ],
-            "searching": false,
-            "paging": false,
+            "searching": true,
+            "paging": true,
             "ordering": false,
             "info": true,
         });
