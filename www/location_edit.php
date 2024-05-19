@@ -26,7 +26,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 // Check if ID is set in the URL
 if (isset($_GET['id'])) {
-   // $recordid = intval($_GET['id']);  // Assuming $recordid is set here
 
     // Fetch the label details
     $sql = "SELECT l.idlocations, l.location, l.description, l.parent, uc.fullname AS createdby, p.idlocations AS pidlocations, p.location AS plocation, uu.fullname AS updatedby, 
@@ -53,8 +52,27 @@ if (isset($_GET['id'])) {
     if ($result !== false && $result->num_rows > 0) {
         $row = $result->fetch_assoc();
         
-        // Fetch list of locations to check against, excluding the current location
-        $sql_locations = "SELECT l.idlocations, l.location, l.parent FROM locations l WHERE (l.deletedon = '0000-00-00' OR l.deletedon IS NULL) AND l.idlocations != $recordid ORDER BY l.location ASC";
+        // Fetch all child locations of the current location
+        $childLocations = [];
+        function fetchChildLocations($locationId, $mysqli, &$childLocations) {
+            $sql = "SELECT idlocations FROM locations WHERE parent = $locationId";
+            $result = $mysqli->query($sql);
+            if ($result !== false && $result->num_rows > 0) {
+                while ($row = $result->fetch_assoc()) {
+                    $childLocations[] = $row['idlocations'];
+                    fetchChildLocations($row['idlocations'], $mysqli, $childLocations);
+                }
+            }
+        }
+        fetchChildLocations($recordid, $mysqli, $childLocations);
+        $childLocationsList = implode(',', $childLocations);
+        
+        // Fetch list of locations excluding current location and its child locations
+        $sql_locations = "SELECT l.idlocations, l.location, l.parent FROM locations l WHERE (l.deletedon = '0000-00-00' OR l.deletedon IS NULL) AND l.idlocations != $recordid";
+        if (!empty($childLocationsList)) {
+            $sql_locations .= " AND l.idlocations NOT IN ($childLocationsList)";
+        }
+        $sql_locations .= " ORDER BY l.location ASC";
         $result_locations = $mysqli->query($sql_locations);
 
         $existingLocations = [];
@@ -198,5 +216,3 @@ function getBreadcrumbHierarchy($locationId, $mysqli) {
 ?>
 
 <?php require 'inc/foot.php';?>
-
-
