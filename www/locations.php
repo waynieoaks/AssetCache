@@ -29,7 +29,7 @@
                 assets AS a ON l.idlocations = a.location
             WHERE 
                 (l.deletedon = '0000-00-00' OR l.deletedon IS NULL)
-                AND a.deletedon = '0000-00-00' OR a.deletedon IS NULL
+                AND (a.deletedon = '0000-00-00' OR a.deletedon IS NULL)
             GROUP BY 
                 l.idlocations, l.location";
 
