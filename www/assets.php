@@ -1,7 +1,21 @@
 <?php require 'inc/head.php';?>
 
   
-<div class="mt-3 mb-3"><h1>Assets</h1></div>
+<div class="container mt-3 mb-3">
+    <div class="row align-items-center">
+        <div class="col"><h1>Assets
+	<a href="asset_add.php" type="button" class="btn btn-outline-primary btn-sm"><i class="fa-regular fa-square-plus"></i>&nbsp;Add</a>
+	</h1></div>
+        <div class="col-auto">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="index.php">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Assets</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+</div>
   
   <table id="table-assets" class="table table-striped table-hover" style="width:100%">
     <thead class="table-secondary">
