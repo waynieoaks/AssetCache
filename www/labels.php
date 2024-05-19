@@ -42,7 +42,8 @@
 			  LEFT JOIN users AS uu ON l.updatedby = uu.userid
 			  WHERE (l.deletedon = '0000-00-00' OR l.deletedon IS NULL) 
 			  AND (a.deletedon = '0000-00-00' OR a.deletedon IS NULL)  
-			  GROUP BY l.idlabels, l.label, l.description, uc.fullname, uu.fullname, createdon, updatedon";
+			  GROUP BY l.idlabels, l.label, l.description, uc.fullname, uu.fullname, createdon, updatedon
+			  ORDER BY l.label ASC";
 			  
 			  $result = $mysqli->query($sql);
 
@@ -76,11 +77,11 @@
 					"autoWidth": false,
 					columns: [ null, { width: '100px' }, { width: '100px' }],
 					"order": [ 0, "asc" ],
-					//"lengthMenu": [ [10, 25, 50, -1], [10, 25, 50, "All"] ],
-					//"iDisplayLength": 25,
-					"searching": false,
-					"paging": false,
-					"ordering": false,
+					"lengthMenu": [ [10, 25, 50, -1], [10, 25, 50, "All"] ],
+					"iDisplayLength": 25,
+					"searching": true,
+					"paging": true,
+					"ordering": true,
 					"info": true,
 					"responsive": true 
 				});
