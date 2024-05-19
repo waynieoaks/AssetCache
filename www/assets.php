@@ -60,7 +60,7 @@
 			<tr>
 				<td><a href="asset_show.php?id=<?php echo $row["idassets"] ?>"><?php echo $row["number"] ?></a></td>
 				<td><?php echo $row["name"] ?></td>
-				<td><?php echo $row["location"] ?></td>
+				<td><a href="location_show.php?id=<?php echo $row["idlocation"] ?>"><?php echo $row["location"] ?></a></td>
 				<td><?php echo $var_currency.$row["purchase_price"] ?></td>
 				<td><?php echo $row["purchase_date"] ?></td>
 				<td><?php echo $row["warranty_status"] ?></td>
