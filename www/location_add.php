@@ -134,7 +134,7 @@ if ($result !== false && $result->num_rows > 0) {
                 return !existingLocations.includes(value);
             },
             messages: {
-                en: 'This label already exists. Please choose another one.'
+                en: 'This location already exists. Please choose another one.'
             }
         });
 
