@@ -27,17 +27,60 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     require 'inc/mysqli-insert.php';
 }
 
-// Fetch list of locations to check against, excluding the current location
-$sql_locations = "SELECT l.idlocations, l.location, l.parent FROM locations l WHERE l.deletedon = '0000-00-00' OR l.deletedon IS NULL ORDER BY l.location ASC";
-$result_locations = $mysqli->query($sql_locations);
+// Fetch list of locations for hierarchical dropdown
+$sql_hierarchy = "SELECT idlocations, location, parent FROM locations WHERE deletedon = '0000-00-00' OR deletedon IS NULL ORDER BY location ASC";
+$result_hierarchy = $mysqli->query($sql_hierarchy);
 
-$existingLocations = [];
-if ($result_locations !== false && $result_locations->num_rows > 0) {
-    // Process the results
-    while ($locationRow = $result_locations->fetch_assoc()) {
-        $existingLocations[] = $locationRow;
+$hierarchicalLocations = [];
+if ($result_hierarchy !== false && $result_hierarchy->num_rows > 0) {
+    while ($locationRow = $result_hierarchy->fetch_assoc()) {
+        $hierarchicalLocations[] = $locationRow;
     }
 }
+
+function buildHierarchy($locations) {
+    $hierarchy = [];
+    foreach ($locations as $location) {
+        $hierarchy[$location['parent']][] = $location;
+    }
+    return $hierarchy;
+}
+
+function generateOptions($parentId, $hierarchy, $depth = 0) {
+    if (!isset($hierarchy[$parentId])) {
+        return '';
+    }
+
+    $locations = $hierarchy[$parentId];
+    usort($locations, function($a, $b) {
+        return strcmp($a['location'], $b['location']);
+    });
+
+    $options = '';
+    foreach ($locations as $location) {
+        $indent = str_repeat('&nbsp;', $depth * 4);
+        $options .= '<option value="' . $location['idlocations'] . '">' . $indent . htmlspecialchars($location['location']) . '</option>';
+        $options .= generateOptions($location['idlocations'], $hierarchy, $depth + 1);
+    }
+
+    return $options;
+}
+
+$hierarchy = buildHierarchy($hierarchicalLocations);
+$options = generateOptions(0, $hierarchy);
+
+// Fetch list of labels to check against
+$sql = "SELECT l.location FROM locations l WHERE l.deletedon = '0000-00-00' OR l.deletedon IS NULL";
+$result = $mysqli->query($sql);
+
+$existingLocations = [];
+if ($result !== false && $result->num_rows > 0) {
+    // Process the results
+    while ($row = $result->fetch_assoc()) {
+        $existingLocations[] = $row['location'];
+    }
+}
+//print_r($existingLabels);
 ?>
 
 <script type="text/javascript">
@@ -47,7 +90,7 @@ if ($result_locations !== false && $result_locations->num_rows > 0) {
 <div class="container mt-3 mb-3">
     <div class="row">
         <div class="col-md-6">
-            <form method="post" id="update-form" data-parsley-validate="" action=""> 
+            <form method="post" id="create-form" data-parsley-validate="" action="">
                 <div class="mb-3">
                     <label for="location" class="form-label">Location:</label>
                     <input type="text" class="form-control" id="location" name="location"
@@ -55,7 +98,7 @@ if ($result_locations !== false && $result_locations->num_rows > 0) {
                         data-parsley-pattern="/^[a-zA-Z0-9.,\/&() ]*$/" 
                         data-parsley-maxlength-message="Please enter no more than 45 characters." 
                         data-parsley-pattern-message="Please use only letters, numbers, ., /, &, (, and )." 
-                        data-parsley-uniquelabel required>
+                        data-parsley-uniquelocation required>
                 </div>
                 <div class="mb-3">
                     <label for="description" class="form-label">Description:</label>
@@ -68,18 +111,7 @@ if ($result_locations !== false && $result_locations->num_rows > 0) {
                     <label for="parent" class="form-label">Parent Location:</label>
                     <select class="form-select" id="parent" name="parent" required>
                         <option value="0" selected>-- None --</option>
-                        <?php
-                        foreach ($existingLocations as $locationRow) {
-                            $breadcrumbs = getBreadcrumbHierarchy($locationRow['idlocations'], $mysqli);
-                            $breadcrumbLinks = [];
-                            foreach ($breadcrumbs as $breadcrumb) {
-                                $breadcrumbLinks[] = $breadcrumb['location'];
-                            }
-                            $hierarchicalLocation = implode(' / ', $breadcrumbLinks);
-                           // $selected = ($locationRow['idlocations'] == $row['parent']) ? 'selected' : '';
-                            echo '<option value="' . $locationRow['idlocations'] . '">' . htmlspecialchars($hierarchicalLocation) . '</option>';
-                        }
-                        ?>
+                        <?php echo $options; ?>
                     </select>
                 </div>
                 <!-- Hidden field for recordset -->
@@ -88,7 +120,7 @@ if ($result_locations !== false && $result_locations->num_rows > 0) {
                 <input type="hidden" name="createdby" value="<?php echo $session_userid; ?>">
                 <input type="hidden" name="updatedby" value="<?php echo $session_userid; ?>">
                 <button type="submit" class="btn btn-primary">Add</button>
-                <a href="location_show.php?id=<?php echo $recordid; ?>" class="btn btn-outline-secondary float-end">Cancel</a>
+                <a href="locations.php" class="btn btn-outline-secondary float-end">Cancel</a>
             </form>
         </div>
     </div>
@@ -97,16 +129,16 @@ if ($result_locations !== false && $result_locations->num_rows > 0) {
 <script type="text/javascript">
     $(function () {
         // Custom validator to check if the label is unique
-        window.Parsley.addValidator('uniquelabel', {
+        window.Parsley.addValidator('uniquelocation', {
             validateString: function(value) {
-                return !existingLabels.includes(value);
+                return !existingLocations.includes(value);
             },
             messages: {
-                en: 'This location already exists. Please try another name.'
+                en: 'This label already exists. Please choose another one.'
             }
         });
 
-        $('#update-form').parsley().on('field:validated', function() {
+        $('#create-form').parsley().on('field:validated', function() {
             var ok = $('.parsley-error').length === 0;
             $('.bs-callout-info').toggleClass('hidden', !ok);
             $('.bs-callout-warning').toggleClass('d-none', ok);
