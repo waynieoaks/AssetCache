@@ -26,7 +26,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 // Check if ID is set in the URL
 if (isset($_GET['id'])) {
-    $recordid = intval($_GET['id']);  // Assuming $recordid is set here
+   // $recordid = intval($_GET['id']);  // Assuming $recordid is set here
 
     // Fetch the label details
     $sql = "SELECT l.idlocations, l.location, l.description, l.parent, uc.fullname AS createdby, p.idlocations AS pidlocations, p.location AS plocation, uu.fullname AS updatedby, 

@@ -5,7 +5,6 @@ require 'inc/head.php';
 ob_start();
 
 if(isset($_GET['id'])) {
-    $recordid = intval($_GET['id']);
 
     // Step 1: Check if the record is valid
     $stmt = $mysqli->prepare("SELECT l.location FROM locations AS l WHERE l.idlocations = ? AND (l.deletedon = '0000-00-00' OR l.deletedon IS NULL)");
