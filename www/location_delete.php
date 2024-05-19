@@ -5,9 +5,11 @@ require 'inc/head.php';
 ob_start();
 
 if(isset($_GET['id'])) {
-
     // Step 1: Check if the record is valid
     $stmt = $mysqli->prepare("SELECT l.location FROM locations AS l WHERE l.idlocations = ? AND (l.deletedon = '0000-00-00' OR l.deletedon IS NULL)");
+    if (!$stmt) {
+        die('Prepare failed: (' . $mysqli->errno . ') ' . $mysqli->error);
+    }
     $stmt->bind_param("i", $recordid);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -21,6 +23,9 @@ if(isset($_GET['id'])) {
         function getAllDescendants($parentId, $mysqli) {
             $descendants = [];
             $stmt = $mysqli->prepare("SELECT idlocations FROM locations WHERE parent = ? AND (deletedon = '0000-00-00' OR deletedon IS NULL)");
+            if (!$stmt) {
+                die('Prepare failed: (' . $mysqli->errno . ') ' . $mysqli->error);
+            }
             $stmt->bind_param("i", $parentId);
             $stmt->execute();
             $result = $stmt->get_result();
@@ -34,6 +39,7 @@ if(isset($_GET['id'])) {
         }
 
         $allDescendants = getAllDescendants($recordid, $mysqli);
+        $allDescendantsList = empty($allDescendants) ? 'NULL' : implode(',', $allDescendants);
 
         // Step 3: Check for assets assigned to this location
         $stmt_assets = $mysqli->prepare("SELECT 
@@ -58,24 +64,36 @@ if(isset($_GET['id'])) {
                                         AND (a.disposed = 0 OR a.disposed IS NULL)
                                         AND a.location = ?
                                         ORDER BY a.number ASC");
+        if (!$stmt_assets) {
+            die('Prepare failed: (' . $mysqli->errno . ') ' . $mysqli->error);
+        }
         $stmt_assets->bind_param("i", $recordid);
         $stmt_assets->execute();
         $result_assets = $stmt_assets->get_result();
 
         // Step 4: Check for child locations
         $stmt_children = $mysqli->prepare("SELECT l.idlocations, l.location FROM locations AS l WHERE parent = ? AND (deletedon = '0000-00-00' OR deletedon IS NULL)");
+        if (!$stmt_children) {
+            die('Prepare failed: (' . $mysqli->errno . ') ' . $mysqli->error);
+        }
         $stmt_children->bind_param("i", $recordid);
         $stmt_children->execute();
         $result_children = $stmt_children->get_result();
 
         // Fetch all locations for the assets dropdown, excluding only the current location
         $stmt_locations_assets = $mysqli->prepare("SELECT idlocations, location FROM locations WHERE idlocations != ? AND (deletedon = '0000-00-00' OR deletedon IS NULL) ORDER BY location ASC");
+        if (!$stmt_locations_assets) {
+            die('Prepare failed: (' . $mysqli->errno . ') ' . $mysqli->error);
+        }
         $stmt_locations_assets->bind_param("i", $recordid);
         $stmt_locations_assets->execute();
         $result_locations_assets = $stmt_locations_assets->get_result();
 
         // Fetch all locations for the child locations dropdown, excluding the current location and its descendants
-        $stmt_locations_children = $mysqli->prepare("SELECT idlocations, location FROM locations WHERE idlocations != ? AND idlocations NOT IN (" . implode(',', $allDescendants) . ") AND (deletedon = '0000-00-00' OR deletedon IS NULL) ORDER BY location ASC");
+        $stmt_locations_children = $mysqli->prepare("SELECT idlocations, location FROM locations WHERE idlocations != ? AND idlocations NOT IN (" . $allDescendantsList . ") AND (deletedon = '0000-00-00' OR deletedon IS NULL) ORDER BY location ASC");
+        if (!$stmt_locations_children) {
+            die('Prepare failed: (' . $mysqli->errno . ') ' . $mysqli->error);
+        }
         $stmt_locations_children->bind_param("i", $recordid);
         $stmt_locations_children->execute();
         $result_locations_children = $stmt_locations_children->get_result();
@@ -87,6 +105,9 @@ if(isset($_GET['id'])) {
         if (isset($_POST['move_all']) && isset($_POST['new_location_all']) && !empty($_POST['new_location_all'])) {
             $new_location_all = intval($_POST['new_location_all']);
             $stmt_move_all = $mysqli->prepare("UPDATE assets SET location = ? WHERE location = ?");
+            if (!$stmt_move_all) {
+                die('Prepare failed: (' . $mysqli->errno . ') ' . $mysqli->error);
+            }
             $stmt_move_all->bind_param("ii", $new_location_all, $recordid);
             $stmt_move_all->execute();
             $stmt_move_all->close();
@@ -101,6 +122,9 @@ if(isset($_GET['id'])) {
                 if (!empty($new_location)) {
                     $new_location = intval($new_location);
                     $stmt_move = $mysqli->prepare("UPDATE assets SET location = ? WHERE idassets = ?");
+                    if (!$stmt_move) {
+                        die('Prepare failed: (' . $mysqli->errno . ') ' . $mysqli->error);
+                    }
                     $stmt_move->bind_param("ii", $new_location, $asset_id);
                     $stmt_move->execute();
                     $stmt_move->close();
@@ -115,6 +139,9 @@ if(isset($_GET['id'])) {
         if (isset($_POST['move_all_children']) && isset($_POST['new_parent_location_all']) && !empty($_POST['new_parent_location_all'])) {
             $new_parent_location_all = intval($_POST['new_parent_location_all']);
             $stmt_move_all_children = $mysqli->prepare("UPDATE locations SET parent = ? WHERE parent = ?");
+            if (!$stmt_move_all_children) {
+                die('Prepare failed: (' . $mysqli->errno . ') ' . $mysqli->error);
+            }
             $stmt_move_all_children->bind_param("ii", $new_parent_location_all, $recordid);
             $stmt_move_all_children->execute();
             $stmt_move_all_children->close();
@@ -129,6 +156,9 @@ if(isset($_GET['id'])) {
                 if (!empty($new_parent_location)) {
                     $new_parent_location = intval($new_parent_location);
                     $stmt_move_child = $mysqli->prepare("UPDATE locations SET parent = ? WHERE idlocations = ?");
+                    if (!$stmt_move_child) {
+                        die('Prepare failed: (' . $mysqli->errno . ') ' . $mysqli->error);
+                    }
                     $stmt_move_child->bind_param("ii", $new_parent_location, $child_id);
                     $stmt_move_child->execute();
                     $stmt_move_child->close();
@@ -143,6 +173,9 @@ if(isset($_GET['id'])) {
         if(isset($_POST['confirm']) && !$disableDelete) {
             // Step 5: Update records in the database
             $stmt = $mysqli->prepare("UPDATE locations SET deletedon = CURRENT_DATE(), deletedby = ? WHERE idlocations = ?");
+            if (!$stmt) {
+                die('Prepare failed: (' . $mysqli->errno . ') ' . $mysqli->error);
+            }
             $stmt->bind_param("si", $session_userid, $recordid);
             $stmt->execute();
             $stmt->close();
