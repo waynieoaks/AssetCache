@@ -70,7 +70,7 @@ $hierarchy = buildHierarchy($hierarchicalLocations);
 $options = generateOptions(0, $hierarchy);
 
 // Fetch list of labels to check against
-$sql = "SELECT l.location FROM locations l WHERE l.deletedon = '0000-00-00' OR l.deletedon IS NULL";
+$sql = "SELECT LOWER(l.location) AS location FROM locations l";
 $result = $mysqli->query($sql);
 
 $existingLocations = [];
@@ -80,7 +80,8 @@ if ($result !== false && $result->num_rows > 0) {
         $existingLocations[] = $row['location'];
     }
 }
-//print_r($existingLabels);
+//print_r($existingLocations);
+
 ?>
 
 <script type="text/javascript">
@@ -131,7 +132,8 @@ if ($result !== false && $result->num_rows > 0) {
         // Custom validator to check if the label is unique
         window.Parsley.addValidator('uniquelocation', {
             validateString: function(value) {
-                return !existingLocations.includes(value);
+                var lowerCaseValue = value.toLowerCase();
+                return !existingLocations.includes(lowerCaseValue);
             },
             messages: {
                 en: 'This location already exists. Please choose another one.'

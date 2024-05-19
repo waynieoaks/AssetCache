@@ -45,7 +45,7 @@ $stmt->fetch();
 $stmt->close();
 
 // Fetch list of usernames to check against, excluding the current username
-$sql_usernames = "SELECT p.username FROM users p WHERE (p.deletedon = '0000-00-00' OR p.deletedon IS NULL) AND p.userid != $session_userid";
+$sql_usernames = "SELECT LOWER(p.username) AS username FROM users p WHERE p.userid != $session_userid";
 $result_usernames = $mysqli->query($sql_usernames);
 
 $existingUsernames = [];
@@ -57,7 +57,7 @@ if ($result_usernames !== false && $result_usernames->num_rows > 0) {
 }
 
 // Fetch list of emails to check against, excluding the current username
-$sql_emails = "SELECT p.email FROM users p WHERE (p.deletedon = '0000-00-00' OR p.deletedon IS NULL) AND p.userid != $session_userid";
+$sql_emails = "SELECT LOWER(p.email) AS email FROM users p WHERE p.userid != $session_userid";
 $result_emails = $mysqli->query($sql_emails);
 
 $existingEmails = [];
@@ -104,7 +104,8 @@ if ($result_emails !== false && $result_emails->num_rows > 0) {
                 <div class="mb-3">
                     <label for="email" class="form-label">Email</label>
                     <input type="email" class="form-control" id="email" name="email" value="<?php echo htmlspecialchars($email); ?>" 
-                    data-parsley-type="email" 
+                    data-parsley-type="email"
+                    data-parsley-uniqueemail 
                     required>
                 </div>
                 <div class="mb-3">
@@ -141,7 +142,8 @@ if ($result_emails !== false && $result_emails->num_rows > 0) {
         // Custom validator to check if the username is unique
         window.Parsley.addValidator('uniqueusername', {
             validateString: function(value) {
-                return !existingUsernames.includes(value);
+                var lowerCaseValue = value.toLowerCase();
+                return !existingUsernames.includes(lowerCaseValue);
             },
             messages: {
                 en: 'This username already exists. Please choose another one.'
@@ -151,7 +153,8 @@ if ($result_emails !== false && $result_emails->num_rows > 0) {
         // Custom validator to check if the email is unique
         window.Parsley.addValidator('uniqueemail', {
             validateString: function(value) {
-                return !existingEmails.includes(value);
+                var lowerCaseValue = value.toLowerCase();
+                return !existingEmails.includes(lowerCaseValue);
             },
             messages: {
                 en: 'This email address is already in use. Please choose another one.'

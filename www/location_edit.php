@@ -26,6 +26,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 // Check if ID is set in the URL
 if (isset($_GET['id'])) {
+    $recordid = $_GET['id'];
 
     // Fetch the label details
     $sql = "SELECT l.idlocations, l.location, l.description, l.parent, uc.fullname AS createdby, p.idlocations AS pidlocations, p.location AS plocation, uu.fullname AS updatedby, 
@@ -52,38 +53,17 @@ if (isset($_GET['id'])) {
     if ($result !== false && $result->num_rows > 0) {
         $row = $result->fetch_assoc();
         
-        // Fetch all child locations of the current location
-        $childLocations = [];
-        function fetchChildLocations($locationId, $mysqli, &$childLocations) {
-            $sql = "SELECT idlocations FROM locations WHERE parent = $locationId";
-            $result = $mysqli->query($sql);
-            if ($result !== false && $result->num_rows > 0) {
-                while ($row = $result->fetch_assoc()) {
-                    $childLocations[] = $row['idlocations'];
-                    fetchChildLocations($row['idlocations'], $mysqli, $childLocations);
-                }
-            }
-        }
-        fetchChildLocations($recordid, $mysqli, $childLocations);
-        $childLocationsList = implode(',', $childLocations);
-        
-        // Fetch list of locations excluding current location and its child locations
-        $sql_locations = "SELECT l.idlocations, l.location, l.parent FROM locations l WHERE (l.deletedon = '0000-00-00' OR l.deletedon IS NULL) AND l.idlocations != $recordid";
-        if (!empty($childLocationsList)) {
-            $sql_locations .= " AND l.idlocations NOT IN ($childLocationsList)";
-        }
-        $sql_locations .= " ORDER BY l.location ASC";
-        $result_locations = $mysqli->query($sql_locations);
+        // Fetch list of locations for hierarchical dropdown
+        $sql_hierarchy = "SELECT idlocations, location, parent FROM locations WHERE deletedon = '0000-00-00' OR deletedon IS NULL ORDER BY location ASC";
+        $result_hierarchy = $mysqli->query($sql_hierarchy);
 
-        $existingLocations = [];
-        if ($result_locations !== false && $result_locations->num_rows > 0) {
-            // Process the results
-            while ($locationRow = $result_locations->fetch_assoc()) {
-                $existingLocations[] = $locationRow;
+        $hierarchicalLocations = [];
+        if ($result_hierarchy !== false && $result_hierarchy->num_rows > 0) {
+            while ($locationRow = $result_hierarchy->fetch_assoc()) {
+                $hierarchicalLocations[] = $locationRow;
             }
         }
 
-        // Build a hierarchical structure
         function buildHierarchy($locations) {
             $hierarchy = [];
             foreach ($locations as $location) {
@@ -92,7 +72,6 @@ if (isset($_GET['id'])) {
             return $hierarchy;
         }
 
-        // Generate options recursively with alphabetical sorting
         function generateOptions($parentId, $hierarchy, $depth = 0) {
             if (!isset($hierarchy[$parentId])) {
                 return '';
@@ -113,8 +92,19 @@ if (isset($_GET['id'])) {
             return $options;
         }
 
-        $hierarchy = buildHierarchy($existingLocations);
+        $hierarchy = buildHierarchy($hierarchicalLocations);
         $options = generateOptions(0, $hierarchy);
+
+        // Fetch list of locations for Parsley.js validation
+        $sql_validation = "SELECT LOWER(location) AS location FROM locations WHERE idlocations != $recordid";
+        $result_validation = $mysqli->query($sql_validation);
+
+        $existingLocations = [];
+        if ($result_validation !== false && $result_validation->num_rows > 0) {
+            while ($locationRow = $result_validation->fetch_assoc()) {
+                $existingLocations[] = $locationRow['location'];
+            }
+        }
         ?>
 
         <script type="text/javascript">
@@ -132,7 +122,7 @@ if (isset($_GET['id'])) {
                                 data-parsley-pattern="/^[a-zA-Z0-9.,\/&() ]*$/" 
                                 data-parsley-maxlength-message="Please enter no more than 45 characters." 
                                 data-parsley-pattern-message="Please use only letters, numbers, ., /, &, (, and )." 
-                                data-parsley-uniquelabel required>
+                                data-parsley-uniqueLocation required>
                         </div>
                         <div class="mb-3">
                             <label for="description" class="form-label">Description:</label>
@@ -163,13 +153,14 @@ if (isset($_GET['id'])) {
 
         <script type="text/javascript">
             $(function () {
-                // Custom validator to check if the label is unique
-                window.Parsley.addValidator('uniquelabel', {
+                // Custom validator to check if the location is unique
+                        window.Parsley.addValidator('uniquelocation', {
                     validateString: function(value) {
-                        return !existingLocations.map(loc => loc.location).includes(value);
+                        var lowerCaseValue = value.toLowerCase();
+                        return !existingLocations.includes(lowerCaseValue);
                     },
                     messages: {
-                        en: 'This location already exists. Please try another name.'
+                        en: 'This location already exists. Please choose another one.'
                     }
                 });
 

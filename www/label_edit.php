@@ -55,7 +55,7 @@ if (isset($_GET['id'])) {
         $row = $result->fetch_assoc();
         
         // Fetch list of labels to check against, excluding the current label
-        $sql = "SELECT l.label FROM labels l WHERE (l.deletedon = '0000-00-00' OR l.deletedon IS NULL) AND l.idlabels != $recordid";
+        $sql = "SELECT LOWER(l.label) as label FROM labels l WHERE l.idlabels != $recordid";
         $result = $mysqli->query($sql);
 
         $existingLabels = [];
@@ -109,7 +109,8 @@ if (isset($_GET['id'])) {
                 // Custom validator to check if the label is unique
                 window.Parsley.addValidator('uniquelabel', {
                     validateString: function(value) {
-                        return !existingLabels.includes(value);
+                        var lowerCaseValue = value.toLowerCase();
+                        return !existingLabels.includes(lowerCaseValue);
                     },
                     messages: {
                         en: 'This label already exists. Please choose another one.'
