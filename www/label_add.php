@@ -37,6 +37,7 @@ if ($result !== false && $result->num_rows > 0) {
         $existingLabels[] = $row['label'];
     }
 }
+
 ?>
 
 <script type="text/javascript">
