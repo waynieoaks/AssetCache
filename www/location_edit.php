@@ -82,6 +82,39 @@ if (isset($_GET['id'])) {
                 $existingLocations[] = $locationRow;
             }
         }
+
+        // Build a hierarchical structure
+        function buildHierarchy($locations) {
+            $hierarchy = [];
+            foreach ($locations as $location) {
+                $hierarchy[$location['parent']][] = $location;
+            }
+            return $hierarchy;
+        }
+
+        // Generate options recursively with alphabetical sorting
+        function generateOptions($parentId, $hierarchy, $depth = 0) {
+            if (!isset($hierarchy[$parentId])) {
+                return '';
+            }
+
+            $locations = $hierarchy[$parentId];
+            usort($locations, function($a, $b) {
+                return strcmp($a['location'], $b['location']);
+            });
+
+            $options = '';
+            foreach ($locations as $location) {
+                $indent = str_repeat('&nbsp;', $depth * 4);
+                $options .= '<option value="' . $location['idlocations'] . '">' . $indent . htmlspecialchars($location['location']) . '</option>';
+                $options .= generateOptions($location['idlocations'], $hierarchy, $depth + 1);
+            }
+
+            return $options;
+        }
+
+        $hierarchy = buildHierarchy($existingLocations);
+        $options = generateOptions(0, $hierarchy);
         ?>
 
         <script type="text/javascript">
@@ -112,18 +145,7 @@ if (isset($_GET['id'])) {
                             <label for="parent" class="form-label">Parent Location:</label>
                             <select class="form-select" id="parent" name="parent" required>
                                 <option value="0" <?php if ($row['parent'] == 0) echo 'selected'; ?>>-- None --</option>
-                                <?php
-                                foreach ($existingLocations as $locationRow) {
-                                    $breadcrumbs = getBreadcrumbHierarchy($locationRow['idlocations'], $mysqli);
-                                    $breadcrumbLinks = [];
-                                    foreach ($breadcrumbs as $breadcrumb) {
-                                        $breadcrumbLinks[] = $breadcrumb['location'];
-                                    }
-                                    $hierarchicalLocation = implode(' / ', $breadcrumbLinks);
-                                    $selected = ($locationRow['idlocations'] == $row['parent']) ? 'selected' : '';
-                                    echo '<option value="' . $locationRow['idlocations'] . '" ' . $selected . '>' . htmlspecialchars($hierarchicalLocation) . '</option>';
-                                }
-                                ?>
+                                <?php echo $options; ?>
                             </select>
                         </div>
                         <!-- Hidden fields for recordset -->
